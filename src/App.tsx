@@ -3,6 +3,7 @@ import { CommandCenter } from './components/CommandCenter';
 import { PlansPage } from './components/PlansPage';
 import { CreditsPage } from './components/CreditsPage';
 import { LoginPage } from './components/LoginPage';
+import { DolmayanChat } from './components/DolmayanChat';
 
 type PageType = 'command' | 'plans' | 'credits' | 'login';
 
@@ -59,24 +60,28 @@ export default function App() {
 
   // If not authenticated, enforce Login
   if (!isAuthenticated) {
-    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+    return (
+      <>
+        <LoginPage onLoginSuccess={handleLoginSuccess} />
+        <DolmayanChat />
+      </>
+    );
   }
 
   // Authenticated Views
-  switch (currentPage) {
-    case 'plans':
-      return <PlansPage onBack={() => navigateTo('command')} />;
-    case 'credits':
-      return <CreditsPage onBack={() => navigateTo('command')} />;
-    case 'login':
-      return <LoginPage onLoginSuccess={handleLoginSuccess} />;
-    case 'command':
-    default:
-      return (
+  return (
+    <>
+      {currentPage === 'plans' && <PlansPage onBack={() => navigateTo('command')} />}
+      {currentPage === 'credits' && <CreditsPage onBack={() => navigateTo('command')} />}
+      {currentPage === 'login' && <LoginPage onLoginSuccess={handleLoginSuccess} />}
+      {currentPage === 'command' && (
         <CommandCenter
           onNavigate={(page) => navigateTo(page)}
           onLogout={handleLogout}
         />
-      );
-  }
+      )}
+      <DolmayanChat />
+    </>
+  );
 }
+

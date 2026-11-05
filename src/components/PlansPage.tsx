@@ -200,15 +200,15 @@ export const PlansPage: React.FC<PlansPageProps> = ({ onBack }) => {
   const filteredPlans = plans.filter((p) => p.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-[#ecf0f1] flex flex-col font-sans select-none overflow-y-auto">
+    <div className="w-full h-screen bg-[#1a1a1a] text-[#ecf0f1] flex flex-col font-sans select-none overflow-y-auto">
       {/* Header */}
-      <header className="bg-[#2c3e50] border-b-2 border-[#f1c40f] px-8 py-4 flex items-center justify-between sticky top-0 z-50 shadow-lg">
+      <header className="bg-[#2c3e50] border-b-2 border-[#f1c40f] px-8 py-4 flex items-center justify-between sticky top-0 z-50 shadow-lg shrink-0">
         <div className="bg-[#f1c40f] text-black font-black text-xl px-4 py-1.5 rounded tracking-wider shadow">
           VAI PITANGA
         </div>
         <button
           onClick={onBack}
-          className="border border-[#f1c40f] text-[#f1c40f] hover:bg-[#f1c40f] hover:text-black px-4 py-2 rounded text-xs font-bold transition-all flex items-center gap-2"
+          className="border border-[#f1c40f] text-[#f1c40f] hover:bg-[#f1c40f] hover:text-black px-4 py-2 rounded text-xs font-bold transition-all flex items-center gap-2 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           CENTRO DE COMANDO
@@ -216,7 +216,7 @@ export const PlansPage: React.FC<PlansPageProps> = ({ onBack }) => {
       </header>
 
       {/* Main Container */}
-      <div className="max-w-6xl mx-auto px-6 py-8 w-full flex-1">
+      <div className="max-w-6xl mx-auto px-6 pt-8 pb-28 w-full flex-1">
         {/* Toast Notification */}
         {notification && (
           <div className="mb-6 bg-emerald-900/80 border border-emerald-500 text-emerald-200 px-4 py-3 rounded-lg flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
