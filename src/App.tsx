@@ -3,7 +3,7 @@ import { CommandCenter } from './components/CommandCenter';
 import { PlansPage } from './components/PlansPage';
 import { CreditsPage } from './components/CreditsPage';
 import { LoginPage } from './components/LoginPage';
-import { DolmayanChat } from './components/DolmayanChat';
+import { DolmayanChat } from './components/PitAiChat';
 
 type PageType = 'command' | 'plans' | 'credits' | 'login';
 
