@@ -11,7 +11,7 @@ export const DolmayanChat: React.FC = () => {
     {
       id: 'welcome-1',
       sender: 'bot',
-      text: 'Olá! Sou o **Dolmayan**, o robô assistente local da **VAI PITANGA**.\n\nFui concebido para rodar de forma leve e local no seu navegador, sem depender de nenhuma chave de API ou conexão externa.\n\nComo posso ajudar com a frota de drones, especificações técnicas, planos ou procedimentos de emergência?',
+      text: 'Olá! Sou o **PIT-AI**, o robô assistente local da **VAI PITANGA**.\n\nFui concebido para rodar de forma leve e local no seu navegador, sem depender de nenhuma chave de API ou conexão externa.\n\nComo posso ajudar com a frota de drones, especificações técnicas, planos ou procedimentos de emergência?',
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
