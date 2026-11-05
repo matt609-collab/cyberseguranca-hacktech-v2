@@ -61,3 +61,26 @@
 .animate-pulse-red {
   animation: pulse-red 1.5s infinite;
 }
+
+/* Indicador de foco amarelo destacado para navegação por TAB */
+*:focus-visible {
+  outline: 3px solid #f1c40f !important;
+  outline-offset: 3px !important;
+}
+
+/* Modo de Alto Contraste para baixa visão e daltonismo */
+body.modo-alto-contraste {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+body.modo-alto-contraste * {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+body.modo-alto-contraste button, 
+body.modo-alto-contraste a {
+  outline: 2px solid #ffff00 !important;
+  color: #ffff00 !important;
+  font-weight: bold !important;
+}

@@ -23,9 +23,9 @@ export const CommandMap: React.FC<CommandMapProps> = ({
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const [mapStyle, setMapStyle] = useState<'dark' | 'osm' | 'satellite'>('dark');
 
-  // Tile layers
+  // URL do CartoDB e outros provedores
   const tileUrls = {
-    dark: 'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=cb1_52rt_1_47f78a1c16614e663063cd01',
+    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
     osm: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
   };
@@ -213,7 +213,7 @@ export const CommandMap: React.FC<CommandMapProps> = ({
           className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
             mapStyle === 'dark' ? 'bg-[#f1c40f] text-black font-bold' : 'text-gray-300 hover:text-white'
           }`}
-          title="Modo Tático Escuro"
+          title="Modo Tático Escuro (CARTO / Mapbox)"
         >
           Tático
         </button>
@@ -222,7 +222,7 @@ export const CommandMap: React.FC<CommandMapProps> = ({
           className={`px-2.5 py-1 text-xs font-medium rounded transition-colors ${
             mapStyle === 'satellite' ? 'bg-[#f1c40f] text-black font-bold' : 'text-gray-300 hover:text-white'
           }`}
-          title="Satélite de Alta Resolução"
+          title="Satélite de Alta Resolução (Esri World Imagery)"
         >
           Satélite
         </button>

@@ -125,6 +125,9 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
       prev.map((d) => (d.id === drone.id ? { ...d, status: 'POUSANDO' } : d))
     );
 
+    const alertMsg = `BATERIA CRÍTICA: DRONE ${drone.id} (${drone.bateria.toFixed(1)}%) - RETORNO AUTOMÁTICO EM CURSO`;
+    (window as unknown as { dispararAlertaVisual?: (s: string) => void }).dispararAlertaVisual?.(alertMsg);
+
     registrarLog(drone.id, `Bateria Baixa (${drone.bateria.toFixed(1)}%)`, 'RETORNO AUTOMÁTICO', 'alert');
 
     // After 5s, complete landing
@@ -133,6 +136,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
         prev.map((d) => (d.id === drone.id ? { ...d, status: 'OFF-LINE' } : d))
       );
       registrarLog(drone.id, 'Pouso de Emergência Concluído na Base Central', 'SOLO', 'warn');
+      (window as unknown as { avisarLeitorDeTela?: (s: string) => void }).avisarLeitorDeTela?.(`Drone ${drone.id} pousou em solo com segurança`);
     }, 5000);
   };
 
@@ -216,6 +220,9 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
             const alertKind = Math.random() < 0.5 ? 'fire' : 'theft';
             soundFx.playAlertBeep();
 
+            const alertTitle = alertKind === 'fire' ? `INCÊNDIO NO SETOR ${victim.local.toUpperCase()}` : `INVASÃO / FURTO NO SETOR ${victim.local.toUpperCase()}`;
+            (window as unknown as { dispararAlertaVisual?: (s: string) => void }).dispararAlertaVisual?.(`${alertTitle} (DRONE ${victim.id})`);
+
             registrarLog(
               victim.id,
               alertKind === 'fire' ? `🔥 Detecção Térmica de Fogo em ${victim.local}` : `🚨 Suspeita de Furto/Invasão em ${victim.local}`,
@@ -234,6 +241,18 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
 
     return () => clearInterval(interval);
   }, [droneInAlert]);
+
+  // Teclado: fechar modais com Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setDroneInInspection(null);
+        setDroneInAlert(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const activeCellsCount = drones.filter((d) => d.status !== 'OFF-LINE').length;
   const alertDrones = drones.filter((d) => d.status === 'ALERTA');
@@ -370,7 +389,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
       </aside>
 
       {/* CENTER - MAP & TELEMETRY LOGS */}
-      <main className="flex flex-col h-full overflow-hidden bg-[#0e141b]">
+      <main id="map-container" tabIndex={-1} className="flex flex-col h-full overflow-hidden bg-[#0e141b] focus:outline-none">
         {/* Leaflet Map */}
         <div className="flex-1 relative w-full overflow-hidden">
           <CommandMap
