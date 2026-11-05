@@ -26,10 +26,10 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBack }) => {
     },
     {
       name: 'Emanuelly',
-      role: 'Engenharia de Software',
+      role: 'Field OPS || Operações de campo',
       image: '/pessoinhas/emanuelly.jpg',
       tag: 'EPT / Backend',
-      details: 'Arquitetura de processamento em tempo real, algoritmos de rotas autônomas e rede tática 5G.',
+      details: 'Testes de funcionamento e prototipagem do drone.',
     },
     {
       name: 'Lorena',
@@ -54,10 +54,10 @@ export const CreditsPage: React.FC<CreditsPageProps> = ({ onBack }) => {
     },
     {
       name: 'Matheus E.',
-      role: 'Operações de Campo',
+      role: 'Engenharia de software || Field OPS',
       image: '/pessoinhas/matheusem.jpg',
       tag: 'EPT / Piloto Homologado',
-      details: 'Homologação de voo ANAC, testes de intempéries em Pitanga e manutenção de campo.',
+      details: 'Backend e frontend do sistema de controle, testes de integração e validação em campo.',
     },
   ];
 
