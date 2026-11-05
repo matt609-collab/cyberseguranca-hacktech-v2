@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { Drone } from '../types';
-import { Layers, Locate, Radio, Shield, AlertTriangle } from 'lucide-react';
+import { Layers, Locate, Radio, Shield, AlertTriangle, ShieldAlert } from 'lucide-react';
 
 interface CommandMapProps {
   drones: Drone[];
   selectedDroneId?: string | null;
   onSelectDrone: (droneId: string) => void;
   onOpenAlert: (droneId: string) => void;
+  onOpenDenuncia?: () => void;
 }
 
 export const CommandMap: React.FC<CommandMapProps> = ({
@@ -15,6 +16,7 @@ export const CommandMap: React.FC<CommandMapProps> = ({
   selectedDroneId,
   onSelectDrone,
   onOpenAlert,
+  onOpenDenuncia,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -110,15 +112,18 @@ export const CommandMap: React.FC<CommandMapProps> = ({
       const isAlert = drone.status === 'ALERTA';
       const isLanding = drone.status === 'POUSANDO';
       const isOffline = drone.status === 'OFF-LINE';
+      const isEnRouteReport = drone.status === 'EM_ROTA_DENUNCIA' || !!drone.waypointDestino;
 
       let markerColor = '#27ae60';
       if (isOffline) markerColor = '#7f8c8d';
       else if (isAlert || isLanding) markerColor = '#e74c3c';
+      else if (isEnRouteReport) markerColor = '#f39c12';
 
       // Custom HTML Drone Marker with rotation and pulse
       const iconHtml = `
         <div class="relative flex items-center justify-center cursor-pointer group" style="width: 44px; height: 44px;">
           ${isAlert ? `<div class="absolute inset-0 rounded-full bg-red-500/40 animate-ping"></div>` : ''}
+          ${isEnRouteReport ? `<div class="absolute inset-0 rounded-full bg-amber-500/40 animate-ping"></div>` : ''}
           ${drone.status === 'ON-LINE' ? `<div class="absolute inset-0 rounded-full bg-emerald-500/20 animate-pulse"></div>` : ''}
           <div style="background:${markerColor}; color:${isAlert || isOffline ? '#fff' : '#0b1118'}; border: 2px solid ${isSelected ? '#f1c40f' : '#ffffff'};"
                class="w-8 h-8 rounded-full flex flex-col items-center justify-center shadow-lg transition-transform duration-300 ${isSelected ? 'scale-125 ring-4 ring-yellow-400/50' : 'hover:scale-110'}">
@@ -149,7 +154,7 @@ export const CommandMap: React.FC<CommandMapProps> = ({
       // Patrol flight trail between HQ and Drone position
       if (!isOffline) {
         L.polyline([baseCoords, [drone.lat, drone.lng]], {
-          color: isAlert ? '#e74c3c' : '#27ae60',
+          color: isAlert ? '#e74c3c' : isEnRouteReport ? '#f39c12' : '#27ae60',
           weight: 1.5,
           dashArray: '3, 6',
           opacity: 0.6,
@@ -158,10 +163,59 @@ export const CommandMap: React.FC<CommandMapProps> = ({
         // Surveillance coverage radius
         L.circle([drone.lat, drone.lng], {
           radius: 380,
-          color: isAlert ? '#e74c3c' : '#27ae60',
+          color: isAlert ? '#e74c3c' : isEnRouteReport ? '#f39c12' : '#27ae60',
           weight: 1,
-          fillColor: isAlert ? '#e74c3c' : '#27ae60',
+          fillColor: isAlert ? '#e74c3c' : isEnRouteReport ? '#f39c12' : '#27ae60',
           fillOpacity: 0.08,
+        }).addTo(pathsGroup);
+      }
+
+      // If drone has an active waypoint from a citizen physical report:
+      if (drone.waypointDestino) {
+        const wp = drone.waypointDestino;
+        
+        // Target destination marker
+        const targetHtml = `
+          <div class="relative flex items-center justify-center cursor-pointer" style="width: 48px; height: 48px;">
+            <div class="absolute inset-0 rounded-full bg-red-600/40 animate-ping"></div>
+            <div class="w-8 h-8 rounded-full bg-red-600 border-2 border-yellow-400 flex items-center justify-center shadow-lg text-white">
+              <svg class="w-5 h-5 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="22" y1="12" x2="18" y2="12"/>
+                <line x1="6" y1="12" x2="2" y2="12"/>
+                <line x1="12" y1="6" x2="12" y2="2"/>
+                <line x1="12" y1="22" x2="12" y2="18"/>
+              </svg>
+            </div>
+            <div class="absolute -bottom-5 whitespace-nowrap bg-red-900/95 px-2 py-0.5 rounded text-[9px] font-mono font-bold text-yellow-300 border border-yellow-400 shadow-lg">
+              🎯 ALVO DENÚNCIA: ${drone.id}
+            </div>
+          </div>
+        `;
+
+        const targetIcon = L.divIcon({
+          className: 'target-waypoint-icon',
+          html: targetHtml,
+          iconSize: [48, 48],
+          iconAnchor: [24, 24],
+        });
+
+        const targetMarker = L.marker([wp.lat, wp.lng], { icon: targetIcon }).addTo(markersGroup);
+        targetMarker.bindTooltip(`
+          <div style="font-family:'Segoe UI',monospace; padding:3px;">
+            <b style="color:#e74c3c">🚨 ALVO DE DENÚNCIA FÍSICA</b><br>
+            <span><b>Incidente:</b> ${wp.tipo}</span><br>
+            <span><b>Local:</b> ${wp.local}</span><br>
+            <span style="color:#f1c40f">Drone ${drone.id} em voo de interceptação imediata</span>
+          </div>
+        `, { className: 'tactical-tooltip', direction: 'top' });
+
+        // Vector Interception Line
+        L.polyline([[drone.lat, drone.lng], [wp.lat, wp.lng]], {
+          color: '#e74c3c',
+          weight: 3,
+          dashArray: '6, 8',
+          opacity: 0.9,
         }).addTo(pathsGroup);
       }
 
@@ -172,6 +226,7 @@ export const CommandMap: React.FC<CommandMapProps> = ({
           <span>📍 ${drone.local}</span><br>
           <span>🔋 Bateria: ${drone.bateria.toFixed(1)}%</span><br>
           <span>📡 Sinal: ${drone.sinal}</span><br>
+          ${drone.waypointDestino ? `<b style="color:#f1c40f">🎯 Em rota para denúncia: ${drone.waypointDestino.tipo}</b><br>` : ''}
           <small style="color:#aaa;">Clique para inspecionar</small>
         </div>
       `;
@@ -243,6 +298,19 @@ export const CommandMap: React.FC<CommandMapProps> = ({
         >
           <Locate className="w-4 h-4" />
         </button>
+        {onOpenDenuncia && (
+          <>
+            <div className="w-[1px] h-4 bg-gray-600 mx-1" />
+            <button
+              onClick={onOpenDenuncia}
+              className="px-2 py-1 text-xs font-bold rounded bg-red-600 hover:bg-red-500 text-white flex items-center gap-1.5 transition-colors shadow-sm animate-pulse"
+              title="Registrar Denúncia Física Cidadã"
+            >
+              <ShieldAlert className="w-3.5 h-3.5" />
+              <span>Denúncia</span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* Map Leaflet Container */}

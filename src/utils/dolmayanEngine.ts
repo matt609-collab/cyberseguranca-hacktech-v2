@@ -13,17 +13,20 @@ export interface ChatMessage {
 export function generateDolmayanResponse(userPrompt: string): string {
   const query = userPrompt.toLowerCase().trim();
 
-  // 1. Apresentação e Quem é Dolmayan
+  // 1. Apresentação e Quem é PIT-AI / Dolmayan
   if (
     query.includes('quem é você') ||
     query.includes('quem e voce') ||
     query.includes('seu nome') ||
+    query.includes('pit-ai') ||
+    query.includes('pit ai') ||
+    query.includes('pitai') ||
     query.includes('dolmayan') ||
     query.includes('o que você faz') ||
     query.includes('o que voce faz')
   ) {
     return (
-      "Olá! Eu sou o **Dolmayan**, o assistente de inteligência artificial local da **VAI PITANGA**. " +
+      "Olá! Eu sou o **PIT-AI**, o assistente de inteligência artificial local da **VAI PITANGA**. " +
       "Minha arquitetura opera localmente no seu navegador (sem depender de conexões ou chaves de API externas) " +
       "para tirar dúvidas operacionais sobre nossa frota de drones solares, planos de monitoramento, procedimentos de segurança e a equipe de desenvolvimento de Pitanga."
     );
@@ -216,7 +219,29 @@ export function generateDolmayanResponse(userPrompt: string): string {
     );
   }
 
-  // 9. Resposta Geral / Fallback Inteligente
+  // 9. Denúncia Física e Cobertura Municipal
+  if (
+    query.includes('denúncia') ||
+    query.includes('denuncia') ||
+    query.includes('denúncia física') ||
+    query.includes('denuncia fisica') ||
+    query.includes('foz') ||
+    query.includes('foz do iguaçu') ||
+    query.includes('cobertura') ||
+    query.includes('municipio contratado') ||
+    query.includes('município contratado')
+  ) {
+    return (
+      "🚨 **Módulo de Denúncia Física Cidadã:**\n\n" +
+      "O botão **'🚨 DENÚNCIA FÍSICA'** permite que usuários logados comuniquem flagrantes em tempo real (como furtos de bicicletas, invasões ou queimadas).\n\n" +
+      "**Regras de Disponibilidade (O Tcham):**\n" +
+      "• **Municípios com Convênio Integral:** Cidadãos em **Pitanga** e **Foz do Iguaçu** possuem cobertura total automática! A mensagem festiva *'Uhuul! Seu município já nos contratou e você pode usar nosso sistema de denúncia!'* é exibida.\n" +
+      "• **Área Rural ou Urbana Particular:** Disponível para usuários com propriedades cadastradas no plano Rural ou Urbano.\n" +
+      "• **Despacho Imediato:** O sistema calcula a distância de todos os drones em voo, seleciona o **drone mais próximo** e re-roteia sua trajetória de patrulha para sobrevoar o local em segundos!"
+    );
+  }
+
+  // 10. Resposta Geral / Fallback Inteligente
   return (
     `Entendido! Em relação à sua dúvida sobre "${userPrompt.slice(0, 45)}":\n\n` +
     "O sistema **VAI PITANGA** é uma central autônoma de vigilância aérea. Posso te ajudar com detalhes sobre:\n" +

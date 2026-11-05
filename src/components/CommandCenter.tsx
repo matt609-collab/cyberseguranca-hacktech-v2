@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Drone, LogEntry } from '../types';
+import { Drone, LogEntry, PhysicalReport } from '../types';
 import { CommandMap } from './CommandMap';
 import { InspectionModal } from './InspectionModal';
 import { AlertModal } from './AlertModal';
+import { DenunciaFisicaModal } from './DenunciaFisicaModal';
 import { soundFx } from '../utils/audio';
 import {
   Plus,
@@ -20,6 +21,9 @@ import {
   Maximize2,
   Volume2,
   VolumeX,
+  ShieldAlert,
+  Target,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface CommandCenterProps {
@@ -52,6 +56,72 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
   // Modals state
   const [droneInInspection, setDroneInInspection] = useState<Drone | null>(null);
   const [droneInAlert, setDroneInAlert] = useState<Drone | null>(null);
+  const [isDenunciaModalOpen, setIsDenunciaModalOpen] = useState<boolean>(false);
+  const [activeReports, setActiveReports] = useState<PhysicalReport[]>([]);
+
+  // Physical Report Dispatch Handler
+  const handleReportCreated = (report: PhysicalReport) => {
+    setActiveReports((prev) => [report, ...prev]);
+
+    // Update assigned drone's route and status
+    setDrones((prev) =>
+      prev.map((d) => {
+        if (d.id === report.assignedDroneId) {
+          return {
+            ...d,
+            status: 'EM_ROTA_DENUNCIA',
+            tipoAlerta: 'denuncia',
+            waypointDestino: {
+              lat: report.lat,
+              lng: report.lng,
+              local: report.endereco,
+              tipo: report.tipo,
+              reportId: report.id,
+            },
+          };
+        }
+        return d;
+      })
+    );
+
+    // Register log
+    registrarLog(
+      report.assignedDroneId,
+      `🚨 Denúncia Física [${report.tipo}] em ${report.endereco} (${report.municipio}) - Re-roteado`,
+      'INTERCEPTANDO',
+      'alert'
+    );
+
+    // Visual & audio accessibility alert
+    const msgAlerta = `DENÚNCIA FÍSICA RECEBIDA: Drone ${report.assignedDroneId} redirecionado imediatamente para ${report.endereco} (${report.municipio})`;
+    (window as unknown as { dispararAlertaVisual?: (s: string) => void }).dispararAlertaVisual?.(msgAlerta);
+    (window as unknown as { avisarLeitorDeTela?: (s: string) => void }).avisarLeitorDeTela?.(
+      `Denúncia física registrada com sucesso. Drone ${report.assignedDroneId} redirecionado imediatamente.`
+    );
+  };
+
+  // Finalizar investigação de denúncia física
+  const finalizarDenuncia = (reportId: string, droneId: string) => {
+    soundFx.playClick();
+    setActiveReports((prev) => prev.filter((r) => r.id !== reportId));
+    setDrones((prev) =>
+      prev.map((d) => {
+        if (d.id === droneId) {
+          return {
+            ...d,
+            status: 'ON-LINE',
+            tipoAlerta: undefined,
+            waypointDestino: undefined,
+          };
+        }
+        return d;
+      })
+    );
+    registrarLog(droneId, `Denúncia ${reportId} Concluída - Drone Retomou Patrulha Padrão`, 'OPERACIONAL', 'success');
+    (window as unknown as { avisarLeitorDeTela?: (s: string) => void }).avisarLeitorDeTela?.(
+      `Ocorrência de denúncia física concluída. Drone ${droneId} em patrulha normal.`
+    );
+  };
 
   // Audio muted state
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -186,6 +256,38 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
             if (nextBat > 100) nextBat = 100;
             if (nextBat < 0) nextBat = 0;
 
+            // Check if drone has a physical report waypoint to intercept
+            if (d.waypointDestino) {
+              const dLat = d.waypointDestino.lat - d.lat;
+              const dLng = d.waypointDestino.lng - d.lng;
+              const dist = Math.sqrt(dLat * dLat + dLng * dLng);
+
+              if (dist > 0.001) {
+                // Fly towards target waypoint at rapid interception speed
+                const step = 0.0015;
+                const nextLat = Number((d.lat + (dLat / dist) * Math.min(dist, step)).toFixed(4));
+                const nextLng = Number((d.lng + (dLng / dist) * Math.min(dist, step)).toFixed(4));
+                return {
+                  ...d,
+                  bateria: nextBat,
+                  lat: nextLat,
+                  lng: nextLng,
+                  coords: `${nextLat}, ${nextLng}`,
+                  velocidade: 52,
+                };
+              } else {
+                // Arrived at incident location
+                return {
+                  ...d,
+                  bateria: nextBat,
+                  local: d.waypointDestino.local,
+                  status: 'ALERTA',
+                  tipoAlerta: 'denuncia',
+                  velocidade: 14,
+                };
+              }
+            }
+
             // Micro-position changes to simulate drone patrolling
             const latShift = (Math.random() - 0.5) * 0.0006;
             const lngShift = (Math.random() - 0.5) * 0.0006;
@@ -248,6 +350,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
       if (e.key === 'Escape') {
         setDroneInInspection(null);
         setDroneInAlert(null);
+        setIsDenunciaModalOpen(false);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -266,6 +369,16 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
         <div className="bg-[#f1c40f] text-black py-2.5 px-3 rounded-md text-center font-black text-xl tracking-wider shadow-md">
           VAI PITANGA
         </div>
+
+        {/* Action Button: FAZER DENÚNCIA FÍSICA */}
+        <button
+          onClick={() => setIsDenunciaModalOpen(true)}
+          className="w-full py-2.5 px-3 rounded-lg bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 active:scale-98 text-white font-black text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-950/60 border border-yellow-400/50 uppercase tracking-wider group"
+          title="Fazer denúncia física com despacho do drone mais próximo"
+        >
+          <ShieldAlert className="w-4 h-4 text-yellow-300 animate-pulse group-hover:scale-110 transition-transform" />
+          <span>🚨 DENÚNCIA FÍSICA</span>
+        </button>
 
         {/* System Central Status */}
         <div className="bg-black/35 p-3 rounded-lg border-l-4 border-[#27ae60] text-xs leading-relaxed">
@@ -308,15 +421,47 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
         <div className="bg-black/35 p-3 rounded-lg border border-[#2c3e50] flex-1 flex flex-col overflow-hidden">
           <div className="text-xs font-bold text-[#f1c40f] uppercase tracking-wider mb-2 border-b border-gray-700 pb-1 flex items-center justify-between">
             <span>Ocorrências Recentes</span>
-            <span className="text-[10px] text-gray-400 font-mono">{alertDrones.length} ativas</span>
+            <span className="text-[10px] text-gray-400 font-mono">{alertDrones.length + activeReports.length} ativas</span>
           </div>
 
           <div className="flex-1 overflow-y-auto space-y-2 pr-1 text-xs">
-            {alertDrones.length === 0 && (
+            {alertDrones.length === 0 && activeReports.length === 0 && (
               <div className="text-gray-400 italic text-[11px] py-4 text-center">
                 Aguardando detecção de sensores...
               </div>
             )}
+
+            {/* Active Citizen Physical Complaints */}
+            {activeReports.map((report) => (
+              <div
+                key={report.id}
+                className="bg-amber-950/70 border-2 border-yellow-400 p-2 rounded-lg text-xs space-y-1 shadow-md shadow-amber-950/40 animate-pulse"
+              >
+                <div className="flex items-center justify-between text-yellow-300 font-bold text-[11px]">
+                  <span className="flex items-center gap-1">
+                    <Target className="w-3.5 h-3.5 text-red-400" />
+                    🎯 {report.tipo}
+                  </span>
+                  <span className="text-[9px] bg-yellow-400 text-black font-black px-1.5 py-0.5 rounded">
+                    {report.assignedDroneId}
+                  </span>
+                </div>
+                <div className="text-[10px] text-gray-200 truncate">
+                  📍 {report.endereco} ({report.municipio})
+                </div>
+                <div className="flex items-center justify-between pt-1 border-t border-yellow-500/30">
+                  <span className="text-[9px] text-yellow-300 font-mono">
+                    Dist: {report.distanciaKm} km · {report.timestamp}
+                  </span>
+                  <button
+                    onClick={() => finalizarDenuncia(report.id, report.assignedDroneId)}
+                    className="text-[9px] bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-1.5 py-0.5 rounded transition-colors"
+                  >
+                    CONCLUIR
+                  </button>
+                </div>
+              </div>
+            ))}
 
             {alertDrones.map((drone) => (
               <div
@@ -326,7 +471,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
               >
                 <div className="flex items-center justify-between text-red-400 font-bold text-[11px]">
                   <span>
-                    {drone.tipoAlerta === 'fire' ? '🔥 INCÊNDIO' : '🚨 SUSPEITA FURTO'}: {drone.id}
+                    {drone.tipoAlerta === 'fire' ? '🔥 INCÊNDIO' : drone.tipoAlerta === 'denuncia' ? '🎯 DENÚNCIA' : '🚨 SUSPEITA FURTO'}: {drone.id}
                   </span>
                   <span className="text-[9px] bg-red-600 text-white px-1 rounded">VER</span>
                 </div>
@@ -403,6 +548,7 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
               const d = drones.find((item) => item.id === droneId);
               if (d) setDroneInAlert(d);
             }}
+            onOpenDenuncia={() => setIsDenunciaModalOpen(true)}
           />
         </div>
 
@@ -577,6 +723,15 @@ export const CommandCenter: React.FC<CommandCenterProps> = ({ onNavigate, onLogo
           drone={droneInAlert}
           onDispatch={(agency) => despachar(agency)}
           onDismiss={descartarAlerta}
+        />
+      )}
+
+      {/* DENÚNCIA FÍSICA MODAL */}
+      {isDenunciaModalOpen && (
+        <DenunciaFisicaModal
+          drones={drones}
+          onClose={() => setIsDenunciaModalOpen(false)}
+          onSubmitReport={handleReportCreated}
         />
       )}
     </div>
