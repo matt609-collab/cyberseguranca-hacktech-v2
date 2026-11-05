@@ -134,7 +134,7 @@ export const DolmayanChat: React.FC = () => {
             setIsOpen(true);
           }}
           className="fixed bottom-5 right-5 z-[99990] flex items-center gap-2.5 bg-[#1b2633] hover:bg-[#223040] text-white border-2 border-[#f1c40f] py-2.5 px-4 rounded-full shadow-[0_4px_25px_rgba(0,0,0,0.8)] transition-all duration-300 hover:scale-105 active:scale-95 group"
-          aria-label="Abrir assistente Dolmayan"
+          aria-label="Abrir assistente PIT-AI"
         >
           <div className="relative flex items-center justify-center">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 animate-ping"></span>
@@ -144,7 +144,7 @@ export const DolmayanChat: React.FC = () => {
             </div>
           </div>
           <div className="text-left font-sans">
-            <div className="text-xs font-black tracking-wider text-[#f1c40f]">DOLMAYAN</div>
+            <div className="text-xs font-black tracking-wider text-[#f1c40f]">PIT-AI</div>
             <div className="text-[10px] text-gray-300 font-mono flex items-center gap-1">
               <span>IA Local Offline</span>
             </div>
@@ -167,7 +167,7 @@ export const DolmayanChat: React.FC = () => {
               </div>
               <div>
                 <div className="font-bold text-xs tracking-wider text-[#f1c40f] flex items-center gap-1.5">
-                  ROBÔ DOLMAYAN
+                  ROBÔ PIT-AI
                   <span className="text-[9px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-1 py-0.2 rounded font-mono">
                     LOCAL / SEM API
                   </span>
@@ -291,7 +291,7 @@ export const DolmayanChat: React.FC = () => {
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Pergunte ao Dolmayan sobre os drones..."
+              placeholder="Pergunte ao PIT-AI sobre os drones..."
               disabled={isTyping}
               className="flex-1 py-2 px-3 rounded-lg bg-[#0e141c] border border-[#34495e] text-white text-xs placeholder:text-gray-500 focus:outline-none focus:border-[#f1c40f] font-mono transition-colors disabled:opacity-50"
             />
