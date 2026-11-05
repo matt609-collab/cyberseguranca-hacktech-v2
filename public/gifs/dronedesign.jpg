@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" style="background:#0b1118; font-family:'Segoe UI',sans-serif;">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#142634"/>
+      <stop offset="100%" stop-color="#0b1118"/>
+    </radialGradient>
+    <pattern id="gridPat" width="25" height="25" patternUnits="userSpaceOnUse">
+      <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(241,196,15,0.06)" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="500" fill="url(#bgGlow)"/>
+  <rect width="800" height="500" fill="url(#gridPat)"/>
+  
+  <circle cx="400" cy="250" r="180" fill="none" stroke="#27ae60" stroke-width="1" stroke-dasharray="4 4" opacity="0.4"/>
+  <circle cx="400" cy="250" r="120" fill="none" stroke="#f1c40f" stroke-width="1" opacity="0.3"/>
+  
+  <line x1="180" y1="250" x2="620" y2="250" stroke="#334155" stroke-width="1" stroke-dasharray="2 4"/>
+  <line x1="400" y1="50" x2="400" y2="450" stroke="#334155" stroke-width="1" stroke-dasharray="2 4"/>
+
+  <!-- Arms -->
+  <line x1="400" y1="250" x2="250" y2="130" stroke="#f1c40f" stroke-width="7" stroke-linecap="round"/>
+  <line x1="400" y1="250" x2="550" y2="130" stroke="#f1c40f" stroke-width="7" stroke-linecap="round"/>
+  <line x1="400" y1="250" x2="250" y2="370" stroke="#f1c40f" stroke-width="7" stroke-linecap="round"/>
+  <line x1="400" y1="250" x2="550" y2="370" stroke="#f1c40f" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- Propellers -->
+  <g>
+    <circle cx="250" cy="130" r="32" fill="none" stroke="#27ae60" stroke-width="2" stroke-dasharray="5 3"/>
+    <circle cx="250" cy="130" r="12" fill="#1e293b" stroke="#27ae60" stroke-width="2"/>
+    <circle cx="550" cy="130" r="32" fill="none" stroke="#27ae60" stroke-width="2" stroke-dasharray="5 3"/>
+    <circle cx="550" cy="130" r="12" fill="#1e293b" stroke="#27ae60" stroke-width="2"/>
+    <circle cx="250" cy="370" r="32" fill="none" stroke="#27ae60" stroke-width="2" stroke-dasharray="5 3"/>
+    <circle cx="250" cy="370" r="12" fill="#1e293b" stroke="#27ae60" stroke-width="2"/>
+    <circle cx="550" cy="370" r="32" fill="none" stroke="#27ae60" stroke-width="2" stroke-dasharray="5 3"/>
+    <circle cx="550" cy="370" r="12" fill="#1e293b" stroke="#27ae60" stroke-width="2"/>
+  </g>
+
+  <!-- Central Fuselage (DJI Mini 3 core) -->
+  <rect x="350" y="200" width="100" height="100" rx="10" fill="#1e293b" stroke="#f1c40f" stroke-width="2"/>
+
+  <!-- Resun 100W Solar Panel -->
+  <rect x="360" y="215" width="80" height="70" rx="4" fill="#0284c7" stroke="#38bdf8" stroke-width="2"/>
+  <line x1="386" y1="215" x2="386" y2="285" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+  <line x1="413" y1="215" x2="413" y2="285" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+  <line x1="360" y1="250" x2="440" y2="250" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+
+  <!-- Thermal Gimbal Camera -->
+  <circle cx="400" cy="180" r="15" fill="#0f172a" stroke="#e74c3c" stroke-width="2"/>
+  <circle cx="400" cy="180" r="6" fill="#e74c3c"/>
+
+  <!-- Callouts -->
+  <text x="400" y="150" fill="#e74c3c" font-size="11" font-weight="bold" text-anchor="middle">CÂMERA TÉRMICA &amp; FPV INFRAVERMELHO</text>
+  <text x="400" y="325" fill="#38bdf8" font-size="11" font-weight="bold" text-anchor="middle">PAINEL SOLAR RESUN 100W INTEGRADO</text>
+  <text x="400" y="420" fill="#27ae60" font-size="12" font-weight="bold" text-anchor="middle">LiFePO4 12V 20Ah + Epower MPPT 20A</text>
+
+  <text x="30" y="40" fill="#f1c40f" font-size="16" font-weight="bold">VAI-PITANGA SOLAR V6 // ESQUEMA EPT</text>
+  <text x="770" y="40" fill="#27ae60" font-size="12" text-anchor="end">AUTÔNOMO 24/7</text>
+</svg>

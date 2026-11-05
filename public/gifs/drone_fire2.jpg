@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="600" height="350" style="background:#1b0505; font-family:'Segoe UI',monospace;">
+  <rect width="600" height="350" fill="#200606"/>
+  <!-- Fire hotspot -->
+  <circle cx="300" cy="175" r="90" fill="#ff4500" opacity="0.3"/>
+  <circle cx="300" cy="175" r="60" fill="#ff8c00" opacity="0.5"/>
+  <circle cx="300" cy="175" r="30" fill="#ffff00" opacity="0.8"/>
+  <circle cx="300" cy="175" r="10" fill="#ffffff"/>
+
+  <!-- AI Target Box -->
+  <rect x="210" y="95" width="180" height="160" fill="none" stroke="#e74c3c" stroke-width="2"/>
+  <rect x="210" y="70" width="180" height="22" fill="#e74c3c"/>
+  <text x="300" y="85" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">INCÊNDIO DETECTADO (620°C)</text>
+
+  <text x="25" y="35" fill="#e74c3c" font-size="12" font-weight="bold">⚠️ ALERTA TÉRMICO FLIR - PITANGA</text>
+  <text x="25" y="55" fill="#f1c40f" font-size="10">COORD: -24.7572, -51.7600 | CONFIANÇA: 98%</text>
+  <text x="575" y="35" fill="#e74c3c" font-size="10" font-weight="bold" text-anchor="end">SINAL EMERGÊNCIA</text>
+</svg>

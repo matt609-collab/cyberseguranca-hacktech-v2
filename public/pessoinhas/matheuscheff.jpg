@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 250" width="250" height="250" style="background:#15202b; font-family:'Segoe UI',sans-serif;">
+  <rect width="250" height="250" fill="#111c26"/>
+  <circle cx="125" cy="125" r="95" fill="#f59e0b" opacity="0.15"/>
+  <circle cx="125" cy="125" r="85" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 4"/>
+  
+  <circle cx="125" cy="95" r="34" fill="#f59e0b" opacity="0.9"/>
+  <!-- Headset -->
+  <path d="M 91 95 A 34 34 0 0 1 159 95" fill="none" stroke="#ffffff" stroke-width="3"/>
+  <rect x="88" y="90" width="6" height="12" rx="2" fill="#ffffff"/>
+  <rect x="156" y="90" width="6" height="12" rx="2" fill="#ffffff"/>
+
+  <!-- Body -->
+  <path d="M 75 195 C 75 150, 175 150, 175 195 Z" fill="#f59e0b" opacity="0.85"/>
+  
+  <!-- Initials -->
+  <circle cx="125" cy="205" r="20" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+  <text x="125" y="212" fill="#ffffff" font-size="12" font-weight="900" text-anchor="middle">MC</text>
+  <text x="125" y="238" fill="#ecf0f1" font-size="11" font-weight="bold" text-anchor="middle">Matheus C.</text>
+</svg>
